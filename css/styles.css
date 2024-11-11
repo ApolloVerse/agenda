@@ -149,19 +149,74 @@
                     }
                 }
 
-            .note-card {
-                background: white;
-                border-radius: 8px;
-                padding: 0.75rem;
-                margin-bottom: 1rem;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                transition: all 0.3s ease;
-                border-left: 3px solid var(--primary-color);
-                width: calc(50% - 1rem);
-                display: inline-block;
-                vertical-align: top;
-                margin: 0.5rem;
-            }
+            /* Adicione estes estilos ao seu arquivo CSS existente */
+.note-card {
+    background: white;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border-left: 3px solid var(--primary-color);
+    width: calc(50% - 1rem);
+    display: inline-block;
+    vertical-align: top;
+    margin: 0.5rem;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.note-card .note-content {
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.3s ease-out;
+}
+
+.note-card .note-content.expanded {
+    max-height: none;
+}
+
+.note-card .note-text {
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.note-card .note-text.expanded {
+    display: block;
+    -webkit-line-clamp: unset;
+}
+
+.note-card .fade-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, white);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.note-card .fade-overlay.hidden {
+    opacity: 0;
+}
+
+@media (max-width: 992px) {
+    .note-card {
+        width: calc(50% - 1rem);
+    }
+}
+
+@media (max-width: 576px) {
+    .note-card {
+        width: 100%;
+    }
+}
 
             .note-card:hover {
                 transform: translateY(-2px);
@@ -284,24 +339,71 @@
                 .priority-selector {
                     flex-direction: column;
                 }
-            .btn-floating {
-                    position: fixed;
-                    bottom: 2rem;
-                    right: 2rem;
-                    width: 56px;
-                    height: 56px;
-                    border-radius: 50%;
-                    background: var(--primary-color);
-                    color: white;
-                    border: none;
-                    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-                    z-index: 1000;
-                }
+            /* Atualize os estilos do botão flutuante */
+.btn-floating {
+    position: fixed;
+    bottom: 2rem;
+    z-index: 1000;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.btn-floating:hover {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    transform: translateY(-2px);
+}
+
+.btn-floating i {
+    font-size: 24px;
+}
+
+/* Botões laterais */
+.btn-floating.btn-left {
+    left: 2rem;
+}
+
+.btn-floating.btn-right {
+    right: 2rem;
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+    .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .btn-floating i {
+        font-size: 20px;
+    }
+    
+    .btn-floating.btn-left {
+        left: 1rem;
+        bottom: 1rem;
+    }
+    
+    .btn-floating.btn-right {
+        right: 1rem;
+        bottom: 1rem;
+    }
+}
+
+/* Estilos para botões de filtro ativos */
+.btn-group .btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
 
                 .btn-floating:hover {
                     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);

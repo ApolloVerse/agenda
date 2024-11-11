@@ -210,61 +210,158 @@
                 initializeCalendar(); // Refresh calendar to show new note indicators
             }
 
-            function updateNotesList(filter = 'all') {
-                const notesContainer = document.getElementById('notes-list');
-                notesContainer.innerHTML = '';
+            // Atualize a função updateNotesList
+function updateNotesList(filter = 'all') {
+    const notesContainer = document.getElementById('notes-list');
+    notesContainer.innerHTML = '';
 
-                let filteredNotes = notes;
-                if (filter === 'urgent') {
-                    filteredNotes = notes.filter(note => note.priority === 'high');
-                } else if (filter === 'upcoming') {
-                    const today = new Date();
-                    filteredNotes = notes.filter(note => new Date(note.date) >= today);
-                }
+    // Atualiza os botões ativos
+    document.querySelectorAll('.filters-bar .btn-group .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById(`btn-${filter}`).classList.add('active');
 
-                filteredNotes.sort((a, b) => {
-                    const priorityValues = { high: 1, medium: 2, low: 3 };
-                    return priorityValues[a.priority] - priorityValues[b.priority];
-                });
+    let filteredNotes = [...notes]; // Cria uma cópia do array para não modificar o original
 
-                filteredNotes.forEach(note => {
-                    const noteCard = createNoteCard(note);
-                    notesContainer.appendChild(noteCard);
-                });
+    // Aplica os filtros
+    if (filter === 'urgent') {
+        filteredNotes = filteredNotes.filter(note => note.priority === 'high');
+    } else if (filter === 'upcoming') {
+        const today = new Date();
+        filteredNotes = filteredNotes.filter(note => new Date(note.date) >= today);
+    }
+
+    // Verifica se há notas para exibir
+    if (filteredNotes.length === 0) {
+        notesContainer.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-sticky-note"></i>
+                <h5>Nenhuma nota encontrada</h5>
+                <p>Clique no botão + para adicionar uma nova nota</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Ordena as notas com base no filtro selecionado
+    filteredNotes.sort((a, b) => {
+        if (filter === 'upcoming') {
+            // Ordena por data, do mais próximo ao mais distante
+            return new Date(a.date) - new Date(b.date);
+        } else {
+            // Ordena por prioridade para outros filtros
+            const priorityValues = { high: 1, medium: 2, low: 3 };
+            const priorityDiff = priorityValues[a.priority] - priorityValues[b.priority];
+            
+            if (priorityDiff === 0) {
+                // Se a prioridade for igual, ordena por data
+                return new Date(b.date) - new Date(a.date);
             }
+            
+            return priorityDiff;
+        }
+    });
 
-            function createNoteCard(note) {
-                const card = document.createElement('div');
-                card.className = `note-card priority-${note.priority}`;
-                
-                card.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="mb-0">${note.title}</h6>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-secondary" onclick="editNote(${note.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteNote(${note.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="small mb-2">${formatDate(note.date)}</p>
-                    <p class="mb-2">${note.text}</p>
-                    ${note.tags.length ? `
-                        <div class="tags mb-2">
-                            ${note.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
-                        </div>
-                    ` : ''}
-                    ${note.image ? `
-                        <div class="note-image">
-                            <img src="${note.image}" alt="Note attachment">
-                        </div>
-                    ` : ''}
-                `;
-                
-                return card;
-            }
+    // Cria e adiciona os cartões de nota
+    filteredNotes.forEach(note => {
+        const noteCard = createNoteCard(note);
+        notesContainer.appendChild(noteCard);
+    });
+}
+
+// Função auxiliar para formatar a data em português
+function formatDate(date) {
+    const options = { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return new Date(date).toLocaleDateString('pt-BR', options);
+}
+
+// Atualize a função toggleCalendarVisibility para manipular o ícone
+function toggleCalendarVisibility() {
+    const calendar = document.querySelector('.calendar-container');
+    const calendarButton = document.querySelector('.btn-floating.btn-right i');
+    
+    calendar.classList.toggle('active');
+    
+    // Atualiza o ícone baseado no estado do calendário
+    if (calendar.classList.contains('active')) {
+        calendarButton.classList.remove('fa-calendar-alt');
+        calendarButton.classList.add('fa-times');
+    } else {
+        calendarButton.classList.remove('fa-times');
+        calendarButton.classList.add('fa-calendar-alt');
+    }
+}
+
+            // Atualize a função createNoteCard no seu arquivo JavaScript
+function createNoteCard(note) {
+    const card = document.createElement('div');
+    card.className = `note-card priority-${note.priority}`;
+    
+    card.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <h6 class="mb-0">${note.title}</h6>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" onclick="editNote(${note.id}); event.stopPropagation();">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteNote(${note.id}); event.stopPropagation();">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        <p class="small mb-2">${formatDate(note.date)}</p>
+        <div class="note-content">
+            <p class="note-text mb-2">${note.text}</p>
+            ${note.tags.length ? `
+                <div class="tags mb-2">
+                    ${note.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
+                </div>
+            ` : ''}
+            ${note.image ? `
+                <div class="note-image">
+                    <img src="${note.image}" alt="Note attachment">
+                </div>
+            ` : ''}
+            <div class="fade-overlay"></div>
+        </div>
+    `;
+    
+    // Adiciona o evento de clique para expandir/recolher
+    card.addEventListener('click', function() {
+        const content = this.querySelector('.note-content');
+        const text = this.querySelector('.note-text');
+        const overlay = this.querySelector('.fade-overlay');
+        
+        content.classList.toggle('expanded');
+        text.classList.toggle('expanded');
+        overlay.classList.toggle('hidden');
+        
+        // Adiciona/remove classe para animação de sombra
+        this.style.boxShadow = content.classList.contains('expanded') 
+            ? '0 4px 6px rgba(0,0,0,0.1)' 
+            : '0 1px 3px rgba(0,0,0,0.1)';
+    });
+    
+    return card;
+}
+
+// Adicione esta função para garantir que os botões não disparem o evento de expansão
+document.addEventListener('DOMContentLoaded', () => {
+    // ... seu código existente ...
+
+    // Previne que cliques nos botões expandam o cartão
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-group')) {
+            e.stopPropagation();
+        }
+    });
+});
 
             function editNote(noteId) {
                 const note = notes.find(n => n.id === noteId);

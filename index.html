@@ -19,22 +19,32 @@
     </div>
 
     <div class="notes-container">
-        <div class="filters-bar">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-                <h4 class="mb-2 mb-md-0">Lembretes</h4>
-                <div class="btn-group">
-                    <button class="btn btn-outline-primary btn-sm" onclick="filterNotes('all')">
-                        Todos
-                    </button>
-                    <button class="btn btn-outline-primary btn-sm" onclick="filterNotes('urgent')">
-                        Urgentes
-                    </button>
-                    <button class="btn btn-outline-primary btn-sm" onclick="filterNotes('upcoming')">
-                        Próximos
-                    </button>
-                </div>
-            </div>
+        <!-- Atualize a seção de filtros no seu HTML -->
+<div class="filters-bar">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <h4 class="mb-2 mb-md-0">Lembretes</h4>
+        <div class="btn-group">
+            <button class="btn btn-outline-primary btn-sm active" onclick="filterNotes('all')" id="btn-all">
+                Todos
+            </button>
+            <button class="btn btn-outline-primary btn-sm" onclick="filterNotes('urgent')" id="btn-urgent">
+                Urgentes
+            </button>
+            <button class="btn btn-outline-primary btn-sm" onclick="filterNotes('upcoming')" id="btn-upcoming">
+                Próximos
+            </button>
         </div>
+    </div>
+</div>
+
+<!-- Adicione os dois botões flutuantes -->
+<button class="btn-floating btn-left" onclick="showAddNoteModal()" title="Adicionar novo lembrete">
+    <i class="fas fa-plus"></i>
+</button>
+
+<button class="btn-floating btn-right" onclick="toggleCalendarVisibility()" title="Mostrar/Ocultar calendário">
+    <i class="fas fa-calendar-alt"></i>
+</button>
         <div id="notes-list" class="container-fluid px-4"></div>
     </div>
 
